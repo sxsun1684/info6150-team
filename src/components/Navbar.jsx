@@ -42,14 +42,14 @@ export default function Navbar() {
 
           <li>
             <NavLink
-              to="/weather"
+              to="/explore"
               className={({ isActive }) =>
                 isActive
                   ? "text-blue-600"
                   : "hover:text-blue-600"
               }
             >
-              Weather
+              Explore
             </NavLink>
           </li>
 
