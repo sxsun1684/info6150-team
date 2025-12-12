@@ -32,7 +32,6 @@ export default function HowItWorks() {
           title="Get Outfit Suggestions"
           description="Receive personalized outfit recommendations tailored to your trip’s temperature, wind, UV, and precipitation conditions."
         />
-
       </div>
     </section>
   );
