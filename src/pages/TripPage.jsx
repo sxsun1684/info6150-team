@@ -1,20 +1,86 @@
+// import { useEffect, useState } from "react";
+// import WeatherCalendar from "../components/calendar/WeatherCalendar";
+// import LocationSelector from "../components/location/LocationSelector";
+// import TripSummary from "../components/summary/TripSummary.jsx";
+//
+// export default function TripPage() {
+//     // Default city = San Francisco
+//     const [location, setLocation] = useState({
+//         name: "San Francisco, USA",
+//         lat: 37.7749,
+//         lon: -122.4194,
+//     });
+//
+//     // Only this one is needed
+//     const [selectedWeather, setSelectedWeather] = useState(null);
+//
+//     // Attempt to auto-detect user location
+//     useEffect(() => {
+//         navigator.geolocation.getCurrentPosition(
+//             (pos) => {
+//                 setLocation({
+//                     name: "Your Location",
+//                     lat: pos.coords.latitude,
+//                     lon: pos.coords.longitude,
+//                 });
+//             },
+//             () => {
+//                 console.log("Location access denied → keep using default SF");
+//             }
+//         );
+//     }, []);
+//
+//     return (
+//         <main className="max-w-5xl mx-auto px-6 py-10">
+//             <header className="mb-10 text-center">
+//   <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+//     Plan Your Trip
+//   </h1>
+//
+//   <p className="text-gray-600 mt-3 text-lg max-w-xl mx-auto">
+//     Choose a destination and select a travel date to preview the weather forecast.
+//   </p>
+//
+//   <div className="h-1 w-24 bg-blue-200 mx-auto mt-6 rounded-full"></div>
+// </header>
+//
+//
+//             <LocationSelector onLocationSelect={setLocation} />
+//
+//             <WeatherCalendar
+//                 lat={location.lat}
+//                 lon={location.lon}
+//                 onSelectDate={(weatherPackage) => {
+//                     setSelectedWeather(weatherPackage); // ⭐ only here
+//                 }}
+//             />
+//
+//             <TripSummary weather={selectedWeather} />
+//
+//         </main>
+//     );
+// }
 import { useEffect, useState } from "react";
 import WeatherCalendar from "../components/calendar/WeatherCalendar";
 import LocationSelector from "../components/location/LocationSelector";
 import TripSummary from "../components/summary/TripSummary.jsx";
+import Modal from "../components/ui/Modal.jsx";
 
 export default function TripPage() {
-    // Default city = San Francisco
+    // -------------------------------
+    // State for location
+    // -------------------------------
     const [location, setLocation] = useState({
         name: "San Francisco, USA",
         lat: 37.7749,
         lon: -122.4194,
     });
 
-    // Only this one is needed
-    const [selectedWeather, setSelectedWeather] = useState(null);
+    // Summary modal state
+    const [openSummary, setOpenSummary] = useState(false);
+    const [weatherSummary, setWeatherSummary] = useState(null);
 
-    // Attempt to auto-detect user location
+    // Auto-detect user location
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -25,38 +91,49 @@ export default function TripPage() {
                 });
             },
             () => {
-                console.log("Location access denied → keep using default SF");
+                console.log("Location denied → staying with SF default");
             }
         );
     }, []);
 
+    // RENDER UI
     return (
         <main className="max-w-5xl mx-auto px-6 py-10">
-            <header className="mb-10 text-center">
-  <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-    Plan Your Trip
-  </h1>
 
-  <p className="text-gray-600 mt-3 text-lg max-w-xl mx-auto">
-    Choose a destination and select a travel date to preview the weather forecast.
-  </p>
+            {/* PAGE HEADER */}
+            <header className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Plan Your Trip
+                </h1>
+                <p className="text-gray-600 mt-1">
+                    Select a city and pick your travel date.
+                </p>
+            </header>
 
-  <div className="h-1 w-24 bg-blue-200 mx-auto mt-6 rounded-full"></div>
-</header>
+            {/* CURRENT LOCATION */}
+            <section className="mb-6">
+                <p className="text-gray-700">
+                    <strong>Current Location:</strong> {location.name}
+                </p>
+            </section>
 
-
+            {/* CITY SEARCH INPUT */}
             <LocationSelector onLocationSelect={setLocation} />
 
+            {/* WEATHER CALENDAR */}
             <WeatherCalendar
                 lat={location.lat}
                 lon={location.lon}
-                onSelectDate={(weatherPackage) => {
-                    setSelectedWeather(weatherPackage); // ⭐ only here
+                onSelectDate={(summary) => {
+                    setWeatherSummary(summary);
+                    setOpenSummary(true);
                 }}
             />
 
-            <TripSummary weather={selectedWeather} />
-
+            {/* SUMMARY MODAL */}
+            <Modal open={openSummary} onClose={() => setOpenSummary(false)}>
+                <TripSummary weather={weatherSummary} />
+            </Modal>
         </main>
     );
 }
