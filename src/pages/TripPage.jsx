@@ -16,21 +16,29 @@ export default function TripPage() {
     const [openSummary, setOpenSummary] = useState(false);
     const [weatherSummary, setWeatherSummary] = useState(null);
 
-    // Auto-detect user location
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setLocation({
-                    name: "Your Location",
-                    lat: pos.coords.latitude,
-                    lon: pos.coords.longitude,
-                });
-            },
-            () => {
-                console.log("Location denied → staying with SF default");
-            }
-        );
+        if (!navigator.geolocation) {
+            console.warn("Geolocation not supported by this browser.");
+            return;
+        }
+
+        const handleSuccess = (pos) => {
+            setLocation({
+                name: "Your Location",
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+            });
+        };
+
+        const handleError = (err) => {
+            console.warn(
+                `Geolocation error (${err.code}): ${err.message} → using SF default`
+            );
+        };
+
+        navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
     }, []);
+
 
     // RENDER UI
     return (

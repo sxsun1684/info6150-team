@@ -88,71 +88,86 @@ export default function TripSummary({weather}) {
             {/* ---------- Temperature Chart ---------- */}
             <Section title="14-Day Temperature Trend">
                 <figure
-                    role="img"
-                    aria-label="Line graph of temperature forecast for the next 14 days"
+                    role="figure"
+                    aria-labelledby="temp-trend-title"
+                    className="w-full flex flex-col items-center"
                 >
-                    <div className="w-full flex justify-center">
-                        <svg width="380" height="120" className="overflow-visible">
-                            {/* Y-axis labels */}
-                            <text
-                                x="-10"
-                                y="20"
-                                textAnchor="end"
-                                className="fill-gray-500 text-xs"
-                            >
-                                {max}°
-                            </text>
-                            <text
-                                x="-10"
-                                y="110"
-                                textAnchor="end"
-                                className="fill-gray-500 text-xs"
-                            >
-                                {min}°
-                            </text>
+                    <figcaption
+                        id="temp-trend-title"
+                        className="text-gray-700 text-sm mb-3"
+                    >
+                        Temperature forecast for the next 14 days
+                    </figcaption>
 
-                            {/* Grid */}
-                            <line x1="0" y1="20" x2="360" y2="20" stroke="#e5e7eb"/>
-                            <line x1="0" y1="110" x2="360" y2="110" stroke="#e5e7eb"/>
+                    <svg
+                        width="400"
+                        height="140"
+                        viewBox="0 0 400 140"
+                        className="overflow-visible"
+                    >
+                        {/* ----------- GRADIENT DEFINITION ----------- */}
+                        <defs>
+                            <linearGradient id="tempGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#60a5fa"/>
+                                {/* light blue */}
+                                <stop offset="50%" stopColor="#3b82f6"/>
+                                {/* blue */}
+                                <stop offset="100%" stopColor="#f87171"/>
+                                {/* soft red */}
+                            </linearGradient>
+                        </defs>
 
-                            {/* Temperature polyline */}
-                            <polyline
-                                fill="none"
-                                stroke="#2563eb"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                points={points}
-                            />
+                        {/* ----------- GRID LINES ----------- */}
+                        <line x1="40" y1="30" x2="380" y2="30" stroke="#e5e7eb"/>
+                        <line x1="40" y1="110" x2="380" y2="110" stroke="#e5e7eb"/>
 
-                            {/* Dots */}
-                            {forecast14.map((d, i) => (
-                                <circle
+                        {/* ----------- Y-AXIS LABELS ----------- */}
+                        <text x="35" y="34" textAnchor="end" className="fill-gray-500 text-xs">
+                            {max}°
+                        </text>
+                        <text x="35" y="114" textAnchor="end" className="fill-gray-500 text-xs">
+                            {min}°
+                        </text>
+
+                        {/* ----------- GRADIENT LINE ----------- */}
+                        <polyline
+                            fill="none"
+                            stroke="url(#tempGradient)"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            points={points}
+                            transform="translate(40, 10)"
+                        />
+
+                        {/* ----------- Dots ----------- */}
+                        {/*{forecast14.map((d, i) => (*/}
+                        {/*    <circle*/}
+                        {/*        key={i}*/}
+                        {/*        cx={i * 26 + 40}*/}
+                        {/*        cy={80 - normalize(d.tempMax) + 10}*/}
+                        {/*        r="3"*/}
+                        {/*        fill="url(#tempGradient)"*/}
+                        {/*    />*/}
+                        {/*))}*/}
+
+                        {/* ----------- X-axis Labels ----------- */}
+                        {forecast14.map((d, i) =>
+                            i % 3 === 0 ? (
+                                <text
                                     key={i}
-                                    cx={i * 26}
-                                    cy={70 - normalize(d.tempMax)}
-                                    r="3"
-                                    fill="#2563eb"
-                                />
-                            ))}
-
-                            {/* X-axis labels */}
-                            {forecast14.map((d, i) =>
-                                i % 3 === 0 ? (
-                                    <text
-                                        key={i}
-                                        x={i * 26}
-                                        y="130"
-                                        textAnchor="middle"
-                                        className="fill-gray-500 text-[10px]"
-                                    >
-                                        {new Date(d.date).getDate()}
-                                    </text>
-                                ) : null
-                            )}
-                        </svg>
-                    </div>
+                                    x={i * 26 + 40}
+                                    y="135"
+                                    textAnchor="middle"
+                                    className="fill-gray-500 text-[10px]"
+                                >
+                                    {new Date(d.date).getDate()}
+                                </text>
+                            ) : null
+                        )}
+                    </svg>
                 </figure>
             </Section>
+
 
             {/* ---------- Footer ---------- */}
             {/*TODO: do not delete*/}
