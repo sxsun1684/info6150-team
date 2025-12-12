@@ -1,101 +1,91 @@
-import { useEffect, useState } from "react";
+import {useLocation} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {getTripPlanAI} from "../utils/getTripPlanAI";
 
 export default function ExplorePage() {
-    const [location, setLocation] = useState(null);
-    const [attractions, setAttractions] = useState([]);
-    const [restaurants, setRestaurants] = useState([]);
+    const {state} = useLocation();
+    const weather = state?.weather;
+
+    const [plan, setPlan] = useState("");
     const [loading, setLoading] = useState(true);
 
-    const API_KEY = "YOUR_GOOGLE_PLACES_API_KEY";
-
-    // 1) get current position
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setLocation({
-                    lat: pos.coords.latitude,
-                    lon: pos.coords.longitude,
-                });
-            },
-            () => {
-                // fallback 默认旧金山
-                setLocation({
-                    lat: 37.7749,
-                    lon: -122.4194,
-                });
-            }
-        );
-    }, []);
+        async function loadPlan() {
+            if (!weather) return;
 
-    // 2) when location accessible，fetch landscapes & cafe
-    useEffect(() => {
-        if (!location) return;
+            const report = {
+                location: weather.locationName ?? "Selected Location",
+                selectedDate: weather.date.toISOString().split("T")[0],
+                today: weather.daily,
+                next14days: weather.forecast14
+            };
 
-        async function fetchData() {
-            setLoading(true);
-
-            const { lat, lon } = location;
-
-            const attractionURL =
-                `https://maps.googleapis.com/maps/api/place/nearbysearch/json` +
-                `?location=${lat},${lon}&rankby=distance&type=tourist_attraction&key=${API_KEY}`;
-
-            const restaurantURL =
-                `https://maps.googleapis.com/maps/api/place/nearbysearch/json` +
-                `?location=${lat},${lon}&rankby=distance&type=restaurant&key=${API_KEY}`;
-
-            const res1 = await fetch(attractionURL);
-            const data1 = await res1.json();
-
-            const res2 = await fetch(restaurantURL);
-            const data2 = await res2.json();
-
-            setAttractions(data1.results || []);
-            setRestaurants(data2.results || []);
+            const result = await getTripPlanAI(report);
+            setPlan(result);
             setLoading(false);
         }
 
-        fetchData();
-    }, [location]);
+        loadPlan();
+    }, [weather]);
 
+    if (!weather) {
+        return (
+            <div className="p-10 text-center text-gray-600">
+                No weather data received.
+            </div>
+        );
+    }
 
-    // ---------------- UI ----------------
     return (
-        <main className="p-6 max-w-3xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">Explore Nearby</h1>
+        <main className="max-w-3xl mx-auto px-6 py-10">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                ✨ AI Travel Plan for {weather.locationName ?? "Your Destination"}
+            </h1>
 
-            {!location && <p>Detecting your location...</p>}
-            {loading && location && <p>Loading nearby places…</p>}
+            {loading ? (
+                <p className="text-gray-500">Generating your personalized travel plan...</p>
+            ) : (
+                <article className="mt-6 p-6 bg-white shadow border rounded-xl">
+                    <pre className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                        {plan && (
+                            <div className="space-y-6 mt-6">
 
-            {/* 景点 */}
-            {!loading && (
-                <section className="mb-10">
-                    <h2 className="text-xl font-semibold mb-2">Tourist Attractions</h2>
-                    <ul className="space-y-2">
-                        {attractions.map((p) => (
-                            <li key={p.place_id} className="border p-3 rounded">
-                                <p className="font-semibold">{p.name}</p>
-                                <p className="text-gray-600 text-sm">{p.vicinity}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
+                                <section className="p-6 bg-white shadow rounded-xl">
+                                    <h2 className="text-xl font-semibold">{plan.location}</h2>
+                                    <p className="text-gray-600 mt-2">{plan.summary}</p>
+
+                                    <p className="mt-4 text-gray-800 font-medium">
+                                        Best Days: {plan.bestDays.join(", ")}
+                                    </p>
+                                </section>
+
+                                <section className="space-y-4">
+                                    {plan.days.map((d) => (
+                                        <div
+                                            key={d.date}
+                                            className="p-5 bg-white border rounded-xl shadow-sm"
+                                        >
+                                            <h3 className="font-semibold text-lg">{d.date}</h3>
+                                            <p className="text-gray-600">{d.weatherSummary}</p>
+
+                                            <p className="mt-2"><strong>Activity:</strong> {d.activity}</p>
+                                            <p><strong>Outfit:</strong> {d.outfit}</p>
+                                            <p><strong>Warnings:</strong> {d.warnings}</p>
+
+                                            <p className="mt-2 text-purple-600 font-medium">
+                                                Photo Score: {d.photoScore}/10
+                                            </p>
+                                        </div>
+                                    ))}
+                                </section>
+
+                            </div>
+                        )}
+
+                    </pre>
+                </article>
             )}
 
-            {/* 餐厅 */}
-            {!loading && (
-                <section>
-                    <h2 className="text-xl font-semibold mb-2">Restaurants</h2>
-                    <ul className="space-y-2">
-                        {restaurants.map((p) => (
-                            <li key={p.place_id} className="border p-3 rounded">
-                                <p className="font-semibold">{p.name}</p>
-                                <p className="text-gray-600 text-sm">{p.vicinity}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            )}
         </main>
     );
 }

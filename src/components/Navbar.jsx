@@ -40,37 +40,37 @@ export default function Navbar() {
             </NavLink>
           </li>
 
-          <li>
-            <NavLink
-              to="/explore"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600"
-                  : "hover:text-blue-600"
-              }
-            >
-              Explore
-            </NavLink>
-          </li>
+          {/*<li>*/}
+          {/*  <NavLink*/}
+          {/*    to="/explore"*/}
+          {/*    className={({ isActive }) =>*/}
+          {/*      isActive*/}
+          {/*        ? "text-blue-600"*/}
+          {/*        : "hover:text-blue-600"*/}
+          {/*    }*/}
+          {/*  >*/}
+          {/*    Explore*/}
+          {/*  </NavLink>*/}
+          {/*</li>*/}
 
-          <li>
-            <NavLink
-              to="/outfit"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600"
-                  : "hover:text-blue-600"
-              }
-            >
-              Outfit
-            </NavLink>
-          </li>
+          {/*<li>*/}
+          {/*  <NavLink*/}
+          {/*    to="/outfit"*/}
+          {/*    className={({ isActive }) =>*/}
+          {/*      isActive*/}
+          {/*        ? "text-blue-600"*/}
+          {/*        : "hover:text-blue-600"*/}
+          {/*    }*/}
+          {/*  >*/}
+          {/*    Outfit*/}
+          {/*  </NavLink>*/}
+          {/*</li>*/}
         </ul>
 
         {/* Login Button */}
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-          Login
-        </button>
+        {/*<button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">*/}
+        {/*  Login*/}
+        {/*</button>*/}
       </section>
     </nav>
   );
