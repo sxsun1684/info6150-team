@@ -127,7 +127,7 @@ export default function WeatherCalendar({ lat, lon, onSelectDate }) {
             const res = await fetch(url);
             const data = await res.json();
 
-            // 👉 Debug 用：务必检查 weathercode 是否存在
+            // check weathercode
             console.log("weathercode:", data.daily.weathercode);
 
             const map = {};
